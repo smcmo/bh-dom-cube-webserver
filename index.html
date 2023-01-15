@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<head>
+	<title>BH DOMINATION CUBE</title>
+</head>
+
+<body>
+	<h1 id="redScoreText">Red: 0</h1>
+	<h1 id="blueScoreText">Blue: 0</h1>
+	<h2 id="winner" hidden></h2>
+	<script>
+		let redScore, blueScore;
+
+		const redScoreText = document.getElementById('redScoreText');
+		const blueScoreText = document.getElementById('blueScoreText');
+		const winnerText = document.getElementById('winner');
+
+		(function loop() {
+			setTimeout(() => {
+				fetch('/scores').then((res) => {
+					res.json().then((data) => {
+						redScore = data.redScore;
+						blueScore = data.blueScore;
+						redScoreText.innerHTML = `Red: ${redScore}`;
+						blueScoreText.innerHTML = `Blue: ${blueScore}`;
+
+						if (redScore === "0" && blueScore === "0") {
+							winnerText.hidden = true;
+						}
+
+						if (redScore >= 1500) {
+							winnerText.innerHTML = 'RED WINS!!!';
+							winnerText.hidden = false;
+						} else if (blueScore >= 1500) {
+							winnerText.innerHTML = 'BLUE WINS!!!';
+							winnerText.hidden = false;
+						}
+					});
+				});
+				loop();
+			}, 500);
+		})();
+
+
+		async function getScores() {
+			while (redScore !== 1500 && blueScore !== 1500) {
+				const res = await fetch('http:localhost:3000');
+				const data = res.json();
+				console.log(data);
+				redScore = data.redScore;
+				blueScore = data.blueScore;
+				redScoreText.innerHTML = `Red: ${redScore}`;
+				blueScoreText.innerHTML = `Blue: ${blueScore}`;
+
+				await delay(5000);
+			}
+		}
+	</script>
+</body>
